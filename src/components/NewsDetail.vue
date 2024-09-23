@@ -1,21 +1,6 @@
 <template>
   <div ref="topRef">
-    <div v-if="loading">
-      <div class="loading-skeleton">
-        <div class="loading-skeleton-image"></div>
-        <div class="loading-skeleton-title"></div>
-        <div class="loading-skeleton-meta"></div>
-        <div class="loading-skeleton-content"></div>
-        <div class="loading-skeleton-related">
-          <div class="loading-skeleton-related-item" v-for="index in 3" :key="index">
-            <div class="loading-skeleton-related-image"></div>
-            <div class="loading-skeleton-related-title"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container_post" v-else>
+    <div class="container_post">
       <div class="card_post" v-if="post">
         <img :src="post.image" class="card-img-top news-image" :alt="post.title" />
         <div class="card-body">
@@ -59,7 +44,7 @@
       </div>
     </div>
 
-    <div v-if="!loading && topViewedPosts.length" class="you-might-like outside-container">
+    <div v-if="topViewedPosts.length" class="you-might-like outside-container">
       <h2>You Might Like</h2>
       <div class="top-viewed-posts-container">
         <div class="top-viewed-post-card" v-for="(topViewedPost, index) in topViewedPosts" :key="index">
@@ -78,7 +63,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { ref, onMounted, watch } from 'vue';
@@ -196,4 +180,3 @@ export default {
   },
 };
 </script>
-
