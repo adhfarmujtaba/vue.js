@@ -62,21 +62,10 @@
     <div v-if="!loading && topViewedPosts.length" class="you-might-like outside-container">
       <h2>You Might Like</h2>
       <div class="top-viewed-posts-container">
-        <div
-          class="top-viewed-post-card"
-          v-for="(topViewedPost, index) in topViewedPosts"
-          :key="index"
-        >
-          <router-link
-            :to="`/${topViewedPost.category_slug}/${topViewedPost.slug}`"
-            class="card-link"
-          >
+        <div class="top-viewed-post-card" v-for="(topViewedPost, index) in topViewedPosts" :key="index">
+          <router-link :to="`/${topViewedPost.category_slug}/${topViewedPost.slug}`" class="card-link">
             <div class="image-container">
-              <img
-                :src="topViewedPost.image"
-                :alt="topViewedPost.title"
-                class="top-viewed-post-image"
-              />
+              <img :src="topViewedPost.image" :alt="topViewedPost.title" class="top-viewed-post-image" />
               <div class="read-time-overlay">{{ topViewedPost.read_time }} min read</div>
             </div>
             <div class="text-container">
@@ -95,7 +84,6 @@ import axios from 'axios';
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useHead } from '@vueuse/head'; // Importing for handling meta tags
 import './NewsDetail.css'; // Adjust the path as needed
 
 export default {
@@ -107,66 +95,65 @@ export default {
     const post = ref(null);
     const relatedPosts = ref([]);
     const topViewedPosts = ref([]);
-    const loading = ref(true); // State to track loading
+    const loading = ref(true);
     const route = useRoute();
     const router = useRouter();
 
     const fetchPost = async () => {
       const postSlug = route.params.slug;
-      loading.value = true; // Start loading
+      loading.value = true;
       try {
         const response = await axios.get(`https://blog.tourismofkashmir.com/apis?post_slug=${postSlug}`);
         post.value = response.data;
+        updateMetaTags();
         await fetchRelatedPosts();
         await fetchTopViewedPosts();
-        setMetaTags(); // Update meta tags after fetching post
       } catch (error) {
         console.error("Error fetching post details:", error);
       } finally {
-        loading.value = false; // End loading
-      }
-    };
-
-    const setMetaTags = () => {
-      if (post.value) {
-        useHead({
-          title: post.value.title,
-          meta: [
-            { name: 'description', content: post.value.excerpt || 'Read this post for more information.' },
-            { property: 'og:title', content: post.value.title },
-            { property: 'og:description', content: post.value.excerpt },
-            { property: 'og:image', content: post.value.image },
-            { property: 'og:url', content: window.location.href },
-          ],
-        });
+        loading.value = false;
       }
     };
 
     const fetchRelatedPosts = async () => {
       if (post.value && post.value.category_name) {
-        loading.value = true; // Start loading
+        loading.value = true;
         try {
           const response = await axios.get(`https://blog.tourismofkashmir.com/related_api.php?related_posts=${post.value.category_name}&exclude_post_id=${post.value.id}`);
           relatedPosts.value = response.data;
         } catch (error) {
           console.error("Error fetching related posts:", error);
         } finally {
-          loading.value = false; // End loading
+          loading.value = false;
         }
       }
     };
 
     const fetchTopViewedPosts = async () => {
       if (post.value) {
-        loading.value = true; // Start loading
+        loading.value = true;
         try {
           const response = await axios.get(`https://blog.tourismofkashmir.com/related_api.php?topviewpost=true&exclude_post_id=${post.value.id}`);
           topViewedPosts.value = response.data;
         } catch (error) {
           console.error("Error fetching top viewed posts:", error);
         } finally {
-          loading.value = false; // End loading
+          loading.value = false;
         }
+      }
+    };
+
+    const updateMetaTags = () => {
+      if (post.value) {
+        const title = post.value.title;
+        const description = post.value.excerpt || post.value.content.substring(0, 150);
+        const image = post.value.image;
+
+        document.title = title;
+        document.querySelector('meta[name="description"]').setAttribute('content', description);
+        document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+        document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+        document.querySelector('meta[property="og:image"]').setAttribute('content', image);
       }
     };
 
@@ -209,3 +196,4 @@ export default {
   },
 };
 </script>
+

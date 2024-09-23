@@ -1,8 +1,24 @@
 <template>
   <div class="category-list">
-    <div v-if="isEmpty" class="empty-category-message">
+    <div v-if="isLoading" class="skeleton-container">
+      <div v-for="index in 10" :key="index" class="card skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-content"></div>
+          <div style="display: flex; align-items: center;">
+            <div class="skeleton-avatar"></div>
+            <div class="skeleton-username"></div>
+            <div class="skeleton-date"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="isEmpty" class="empty-category-message">
       <p>There are no posts in this category.</p>
     </div>
+
     <div v-else>
       <div v-for="post in categoryPosts" :key="post.id" class="card" @contextmenu.prevent>
         <RouterLink :to="`/${post.category_slug}/${post.slug}`" class="news-item-link">
@@ -29,7 +45,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
@@ -40,9 +55,11 @@ export default {
   setup() {
     const categoryPosts = ref([]);
     const isEmpty = ref(false);
+    const isLoading = ref(true); // New loading state
     const route = useRoute();
 
     const fetchCategoryPosts = async () => {
+      isLoading.value = true; // Start loading
       try {
         const categorySlug = route.params.categorySlug;
         console.log("Current category slug:", categorySlug); // Log current slug
@@ -59,6 +76,8 @@ export default {
       } catch (error) {
         console.error('Error fetching category posts:', error);
         isEmpty.value = true;
+      } finally {
+        isLoading.value = false; // Stop loading
       }
     };
 
@@ -118,13 +137,10 @@ export default {
     return {
       categoryPosts,
       isEmpty,
+      isLoading, // Expose loading state
       formatViews,
       formatDate,
     };
   },
 };
 </script>
-
-<style scoped>
-
-</style>
