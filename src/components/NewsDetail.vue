@@ -1,7 +1,18 @@
 <template>
   <div ref="topRef">
-    <div v-if="loading" class="spinner-overlay">
-      <div class="spinner"></div>
+    <div v-if="loading" >
+  <div class="loading-skeleton">
+    <div class="loading-skeleton-image"></div>
+    <div class="loading-skeleton-title"></div>
+    <div class="loading-skeleton-meta"></div>
+    <div class="loading-skeleton-content"></div>
+    <div class="loading-skeleton-related">
+      <div class="loading-skeleton-related-item" v-for="index in 3" :key="index">
+        <div class="loading-skeleton-related-image"></div>
+        <div class="loading-skeleton-related-title"></div>
+      </div>
+    </div>
+  </div>
     </div>
 
     <div class="container_post" v-else>
@@ -181,5 +192,3 @@ export default {
   },
 };
 </script>
-
-
