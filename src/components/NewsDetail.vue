@@ -143,21 +143,28 @@ export default {
       }
     };
 
-    const updateMetaTags = () => {
+const updateMetaTags = () => {
   if (post.value) {
     const title = post.value.title;
     const description = post.value.excerpt || post.value.content.substring(0, 150);
     const image = post.value.image;
     const url = window.location.href; // Use the current window URL
 
+    // Set the image dimensions (you may need to adjust these values)
+    const imageWidth = 1200; // Replace with actual width if needed
+    const imageHeight = 630; // Replace with actual height if needed
+
     document.title = title;
     document.querySelector('meta[name="description"]').setAttribute('content', description);
     document.querySelector('meta[property="og:title"]').setAttribute('content', title);
     document.querySelector('meta[property="og:description"]').setAttribute('content', description);
     document.querySelector('meta[property="og:image"]').setAttribute('content', image);
+    document.querySelector('meta[property="og:image:width"]').setAttribute('content', imageWidth);
+    document.querySelector('meta[property="og:image:height"]').setAttribute('content', imageHeight);
     document.querySelector('meta[property="og:url"]').setAttribute('content', url); // Set the URL meta tag
   }
 };
+
 
 
     const formatViews = (views) => {
