@@ -1,6 +1,21 @@
 <template>
   <div ref="topRef">
-    <div class="container_post">
+    <div v-if="loading">
+      <div class="loading-skeleton">
+        <div class="loading-skeleton-image"></div>
+        <div class="loading-skeleton-title"></div>
+        <div class="loading-skeleton-meta"></div>
+        <div class="loading-skeleton-content"></div>
+        <div class="loading-skeleton-related">
+          <div class="loading-skeleton-related-item" v-for="index in 3" :key="index">
+            <div class="loading-skeleton-related-image"></div>
+            <div class="loading-skeleton-related-title"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container_post" v-else>
       <div class="card_post" v-if="post">
         <img :src="post.image" class="card-img-top news-image" :alt="post.title" />
         <div class="card-body">
@@ -44,7 +59,7 @@
       </div>
     </div>
 
-    <div v-if="topViewedPosts.length" class="you-might-like outside-container">
+    <div v-if="!loading && topViewedPosts.length" class="you-might-like outside-container">
       <h2>You Might Like</h2>
       <div class="top-viewed-posts-container">
         <div class="top-viewed-post-card" v-for="(topViewedPost, index) in topViewedPosts" :key="index">
@@ -63,6 +78,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from 'axios';
 import { ref, onMounted, watch } from 'vue';
@@ -128,18 +144,21 @@ export default {
     };
 
     const updateMetaTags = () => {
-      if (post.value) {
-        const title = post.value.title;
-        const description = post.value.excerpt || post.value.content.substring(0, 150);
-        const image = post.value.image;
+  if (post.value) {
+    const title = post.value.title;
+    const description = post.value.excerpt || post.value.content.substring(0, 150);
+    const image = post.value.image;
+    const url = window.location.href; // Use the current window URL
 
-        document.title = title;
-        document.querySelector('meta[name="description"]').setAttribute('content', description);
-        document.querySelector('meta[property="og:title"]').setAttribute('content', title);
-        document.querySelector('meta[property="og:description"]').setAttribute('content', description);
-        document.querySelector('meta[property="og:image"]').setAttribute('content', image);
-      }
-    };
+    document.title = title;
+    document.querySelector('meta[name="description"]').setAttribute('content', description);
+    document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+    document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+    document.querySelector('meta[property="og:image"]').setAttribute('content', image);
+    document.querySelector('meta[property="og:url"]').setAttribute('content', url); // Set the URL meta tag
+  }
+};
+
 
     const formatViews = (views) => {
       if (views >= 10000000) return Math.floor(views / 10000000) + 'cr';
@@ -180,3 +199,4 @@ export default {
   },
 };
 </script>
+
