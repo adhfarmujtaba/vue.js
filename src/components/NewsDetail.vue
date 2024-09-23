@@ -1,18 +1,18 @@
 <template>
   <div ref="topRef">
-    <div v-if="loading" >
-  <div class="loading-skeleton">
-    <div class="loading-skeleton-image"></div>
-    <div class="loading-skeleton-title"></div>
-    <div class="loading-skeleton-meta"></div>
-    <div class="loading-skeleton-content"></div>
-    <div class="loading-skeleton-related">
-      <div class="loading-skeleton-related-item" v-for="index in 3" :key="index">
-        <div class="loading-skeleton-related-image"></div>
-        <div class="loading-skeleton-related-title"></div>
+    <div v-if="loading">
+      <div class="loading-skeleton">
+        <div class="loading-skeleton-image"></div>
+        <div class="loading-skeleton-title"></div>
+        <div class="loading-skeleton-meta"></div>
+        <div class="loading-skeleton-content"></div>
+        <div class="loading-skeleton-related">
+          <div class="loading-skeleton-related-item" v-for="index in 3" :key="index">
+            <div class="loading-skeleton-related-image"></div>
+            <div class="loading-skeleton-related-title"></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
     </div>
 
     <div class="container_post" v-else>
@@ -95,6 +95,7 @@ import axios from 'axios';
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useHead } from '@vueuse/head'; // Importing for handling meta tags
 import './NewsDetail.css'; // Adjust the path as needed
 
 export default {
@@ -118,10 +119,26 @@ export default {
         post.value = response.data;
         await fetchRelatedPosts();
         await fetchTopViewedPosts();
+        setMetaTags(); // Update meta tags after fetching post
       } catch (error) {
         console.error("Error fetching post details:", error);
       } finally {
         loading.value = false; // End loading
+      }
+    };
+
+    const setMetaTags = () => {
+      if (post.value) {
+        useHead({
+          title: post.value.title,
+          meta: [
+            { name: 'description', content: post.value.excerpt || 'Read this post for more information.' },
+            { property: 'og:title', content: post.value.title },
+            { property: 'og:description', content: post.value.excerpt },
+            { property: 'og:image', content: post.value.image },
+            { property: 'og:url', content: window.location.href },
+          ],
+        });
       }
     };
 
