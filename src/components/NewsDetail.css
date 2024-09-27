@@ -466,6 +466,7 @@
     padding: 10px 20px; /* Padding for touch friendliness */
     border-radius: 10px; /* Rounded corners for the buttons */
     background-color: #f0f0f0; /* Light background for each option */
+    box-sizing: border-box;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.2s; /* Smooth background color and scale transition */
   }
@@ -606,4 +607,46 @@
   height: 16px;
   background: #e0e0e0;
   width: 70%;
+}
+.interaction-icons {
+  display: flex;
+  justify-content: space-around;
+  position: fixed; /* Fix the icons at the bottom */
+  bottom: 0; /* Position them at the bottom */
+  left: 0;
+  right: 0; /* Stretch across the full width */
+  background-color: white; /* Ensure visibility */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow */
+  padding: 10px 0; /* Padding for spacing */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.icon-container span {
+  font-size: 12px;
+}
+
+.liked {
+  color: red; /* Change this to your desired color */
+}
+
+
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.icon-container span {
+  font-size: 12px;
+}
+.liked {
+  color: red; /* Change this to your desired color */
 }

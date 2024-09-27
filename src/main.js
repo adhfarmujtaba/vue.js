@@ -1,18 +1,33 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router'; // Import the router
-import './assets/styles.css'; // Global styles if you have any
+import router from './router';
+import './assets/styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons'; // Import the solid icons
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faClock, faCalendarAlt, faShare, faHeart, faBookmark, faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as farHeart, faBookmark as farBookmark, faCommentDots as farCommentDots } from '@fortawesome/free-regular-svg-icons';
+import { faFacebookF, faTwitter, faWhatsapp } from '@fortawesome/free-brands-svg-icons'; 
 
-library.add(fas); // Add the solid icons to the library
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+import 'simplebar/dist/simplebar.css';
+
+// Add all solid icons
+library.add(fas, faEye, faClock, faCalendarAlt, faShare, faHeart, faBookmark, faClipboard);
+library.add(farHeart, farBookmark, farCommentDots);
+library.add(faFacebookF, faTwitter, faWhatsapp);
 
 const app = createApp(App);
 
-// Use the router
-app.use(router);
-app.component('font-awesome-icon', FontAwesomeIcon); // Register the FontAwesomeIcon component globally
+const toastOptions = {
+    position: 'top-center',
+    timeout: 2000,
+    closeOnClick: true,
+    pauseOnHover: true,
+};
 
-// Mount the app
+app.component('font-awesome-icon', FontAwesomeIcon);
+app.use(router);
+app.use(Toast, toastOptions);
 app.mount('#app');

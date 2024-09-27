@@ -2,17 +2,14 @@
   <div id="app">
     <SidebarComponent :isMenuOpen="isMenuOpen" @toggleMenu="toggleMenu" />
     <div class="content-wrapper" :class="{ 'shifted': isMenuOpen }">
-      <Header :isMenuOpen="isMenuOpen" @toggleMenu="toggleMenu" />
-      <main 
-        @touchstart="touchStart" 
-        @touchmove="touchMove" 
-        @touchend="touchEnd" 
-        :style="{ transform: pullDownStyle, transition: pullDownTransition }"
-      >
+      <Header v-if="!isNotificationPage" :isMenuOpen="isMenuOpen" @toggleMenu="toggleMenu" />
+      <main>
         <transition name="slide-down-up" mode="out-in" appear>
-          <router-view :key="$route.path" />
+          <router-view :key="$route.fullPath" />
         </transition>
-        <div v-if="isRefreshing" class="refresh-indicator">Refreshing...</div>
+        <div v-if="isPulling" class="pull-text">
+          <i class="fas fa-arrow-down pull-icon"></i> Pull and release to refresh
+        </div>
       </main>
     </div>
     <div class="overlay" v-if="isMenuOpen" @click="toggleMenu"></div>
@@ -32,75 +29,36 @@ export default {
   data() {
     return {
       isMenuOpen: false,
-      isRefreshing: false,
-      startY: 0,
-      pullDownOffset: 0,
       isPulling: false,
-      pullDownTransition: 'none', // Initialize without transition
+      isNotificationPage: false, // New property
     };
   },
-  computed: {
-    pullDownStyle() {
-      return `translateY(${this.pullDownOffset}px)`; // Apply the pull-down offset
+  watch: {
+    $route(to) {
+      // Set isNotificationPage based on route name or path
+      this.isNotificationPage = to.name === 'notifications'; // Adjust this condition as needed
     },
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
-    touchStart(event) {
-      this.startY = event.touches[0].clientY;
-      this.pullDownOffset = 0; // Reset offset on touch start
-      this.isPulling = false;
-      this.pullDownTransition = 'none'; // Disable transition on touch start
-    },
-    touchMove(event) {
-      const currentY = event.touches[0].clientY;
-      const distance = currentY - this.startY;
-
-      // Only allow pulling down if the user is at the top of the content
-      if (distance > 50 && !this.isRefreshing) { // Threshold to detect pull-down
-        this.isPulling = true;
-        this.pullDownOffset = distance; // Update offset for visual effect
-        this.pullDownTransition = 'transform 0.2s ease'; // Set smooth transition
-        event.preventDefault(); // Prevent default behavior to stop scrolling
-      }
-    },
-    touchEnd() {
-      if (this.isPulling) {
-        this.refresh();
-      } else {
-        this.resetPullDown();
-      }
-      this.isPulling = false;
-      this.pullDownTransition = 'transform 0.2s ease'; // Smooth transition back
-    },
-    resetPullDown() {
-      this.pullDownOffset = 0; // Reset offset if not pulling
-    },
-    refresh() {
-      this.isRefreshing = true;
-      // Simulate a refresh operation
-      setTimeout(() => {
-        this.isRefreshing = false;
-        this.resetPullDown(); // Reset offset after refresh
-      }, 2000); // Simulated refresh duration
-    },
   },
 };
 </script>
 
 <style>
-/* Add styles for refresh indicator */
-.refresh-indicator {
+/* Pull text styles */
+.pull-text {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: -50px; /* Adjust position as needed */
   background: rgba(255, 255, 255, 0.8);
   padding: 10px;
   border-radius: 5px;
-  z-index: 10; /* Ensure it's above the content */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #666; /* Optional: change text color */
 }
 
 .content-wrapper {
